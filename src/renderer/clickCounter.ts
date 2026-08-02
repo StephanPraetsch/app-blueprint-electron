@@ -33,7 +33,6 @@ export class ClickCounter {
       try {
         const currentCount = await this.incrementClickCount();
         this.output.textContent = this.toLabel(currentCount);
-        console.log(currentCount);
       } catch (error) {
         this.output.textContent = `Failed to store click: ${this.toErrorMessage(error)}`;
       }
