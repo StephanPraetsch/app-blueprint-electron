@@ -1,5 +1,9 @@
 export const IPC_CHANNELS = {
   getCurrentClickCount: "click-count:get-current",
   incrementClickCount: "click-count:increment",
-  resetClickCount: "click-count:reset"
+  resetClickCount: "click-count:reset",
+  getDatabasePath: "settings:database-path:get",
+  selectDatabasePath: "settings:database-path:select",
+  openDatabasePathInFileBrowser: "settings:database-path:open-in-file-browser",
+  closeSettingsWindow: "settings:window:close"
 } as const;
