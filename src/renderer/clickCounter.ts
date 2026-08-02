@@ -27,7 +27,7 @@ export class ClickCounter {
   }
 
   public async start(): Promise<void> {
-    await this.initializeFromStorage();
+    await this.refresh();
 
     this.incrementButton.addEventListener("click", async () => {
       try {
@@ -46,6 +46,10 @@ export class ClickCounter {
         this.output.textContent = `Failed to reset click count: ${this.toErrorMessage(error)}`;
       }
     });
+  }
+
+  public async refresh(): Promise<void> {
+    await this.initializeFromStorage();
   }
 
   private async initializeFromStorage(): Promise<void> {

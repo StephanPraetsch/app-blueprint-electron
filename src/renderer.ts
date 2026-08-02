@@ -1,7 +1,7 @@
 import {ClickCounter} from "./renderer/clickCounter.js";
 import {Clock} from "./renderer/clock.js";
 import {getRequiredElement} from "./renderer/dom.js";
-import {getCurrentClickCount, incrementClickCount, resetClickCount} from "./renderer/ipcClickCountGateway.js";
+import {getCurrentClickCount, incrementClickCount, onDatabasePathChanged, resetClickCount} from "./renderer/ipcClickCountGateway.js";
 
 const currentTimeElement = getRequiredElement<HTMLElement>("current-time");
 const clickOutputElement = getRequiredElement<HTMLElement>("click-output");
@@ -20,3 +20,8 @@ const clickCounter = new ClickCounter(
 
 clock.start();
 await clickCounter.start();
+
+onDatabasePathChanged(() => {
+  void clickCounter.refresh();
+});
+

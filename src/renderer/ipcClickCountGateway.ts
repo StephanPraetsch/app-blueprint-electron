@@ -1,4 +1,4 @@
-import type {IpcRenderer} from "electron";
+import type {IpcRenderer, IpcRendererEvent} from "electron";
 import {IPC_CHANNELS} from "../shared/ipcChannels.js";
 
 const getIpcRenderer = (): IpcRenderer => {
@@ -63,5 +63,11 @@ export const openDatabasePathInFileBrowser = async (): Promise<void> => {
 
 export const closeSettingsWindow = async (): Promise<void> => {
   await getIpcRenderer().invoke(IPC_CHANNELS.closeSettingsWindow);
+};
+
+export const onDatabasePathChanged = (callback: () => void): void => {
+  getIpcRenderer().on(IPC_CHANNELS.databasePathChanged, (_event: IpcRendererEvent) => {
+    callback();
+  });
 };
 

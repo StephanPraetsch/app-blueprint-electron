@@ -27,6 +27,9 @@ export const registerClickCountIpcHandlers = (service: ClickCountApplicationServ
     }
 
     service.setDatabasePath(selectedPath);
+    BrowserWindow.getAllWindows().forEach((window) => {
+      window.webContents.send(IPC_CHANNELS.databasePathChanged);
+    });
     return service.getDatabasePath();
   });
 
