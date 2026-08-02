@@ -1,20 +1,20 @@
 import {dialog} from "electron";
 
 export const selectDatabaseFile = async (currentPath: string): Promise<string | null> => {
-  const saveResponse = await dialog.showSaveDialog({
+  const openResponse = await dialog.showOpenDialog({
     title: "Choose SQLite database file",
     defaultPath: currentPath,
     filters: [
       {name: "SQLite Database", extensions: ["sqlite", "db", "sqlite3"]},
       {name: "All Files", extensions: ["*"]}
     ],
-    properties: ["createDirectory", "showOverwriteConfirmation"]
+    properties: ["openFile", "createDirectory"]
   });
 
-  if (saveResponse.canceled) {
+  if (openResponse.canceled) {
     return null;
   }
 
-  return saveResponse.filePath ?? null;
+  return openResponse.filePaths[0] ?? null;
 };
 
