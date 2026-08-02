@@ -1,9 +1,8 @@
-import {app, BrowserWindow, dialog} from "electron";
+import {app, BrowserWindow} from "electron";
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {registerClickCountIpcHandlers} from "./main/adapters/inbound/ipc/registerClickCountIpcHandlers.js";
-import {selectDatabaseFile} from "./main/adapters/inbound/menu/selectDatabaseFileDialog.js";
 import {setupApplicationMenu} from "./main/adapters/inbound/menu/setupApplicationMenu.js";
 import {DataBaseConfigLocalSqlite} from "./main/adapters/outbound/sqlite/DataBaseConfigLocalSqlite.js";
 import {SqliteClickCountRepositoryFactory} from "./main/adapters/outbound/sqlite/SqliteClickCountRepositoryFactory.js";
@@ -12,6 +11,8 @@ import {showAboutDialog} from "./main/aboutDialog.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+let mainWindow: BrowserWindow | null = null;
+let settingsWindow: BrowserWindow | null = null;
 
 const hasVersionFlag = process.argv.includes("--version") || process.argv.includes("-v");
 
@@ -22,8 +23,8 @@ if (hasVersionFlag) {
   process.exit(0);
 }
 
-const createMainWindow = () => {
-  const window = new BrowserWindow({
+const createMainWindow = (): BrowserWindow => {
+  mainWindow = new BrowserWindow({
     width: 900,
     height: 600,
     webPreferences: {
@@ -31,7 +32,39 @@ const createMainWindow = () => {
       contextIsolation: false
     }
   });
-  window.loadFile(path.join(__dirname, "index.html"));
+  mainWindow.on("closed", () => {
+    mainWindow = null;
+  });
+  void mainWindow.loadFile(path.join(__dirname, "index.html"));
+  return mainWindow;
+};
+
+const openSettingsWindow = (): BrowserWindow => {
+  if (settingsWindow !== null && !settingsWindow.isDestroyed()) {
+    if (settingsWindow.isMinimized()) {
+      settingsWindow.restore();
+    }
+
+    settingsWindow.focus();
+    return settingsWindow;
+  }
+
+  settingsWindow = new BrowserWindow({
+    width: 640,
+    height: 420,
+    title: "Settings",
+    autoHideMenuBar: true,
+    parent: BrowserWindow.getFocusedWindow() ?? mainWindow ?? undefined,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false
+    }
+  });
+  settingsWindow.on("closed", () => {
+    settingsWindow = null;
+  });
+  void settingsWindow.loadFile(path.join(__dirname, "settings.html"));
+  return settingsWindow;
 };
 
 app.whenReady().then(async () => {
@@ -43,33 +76,26 @@ app.whenReady().then(async () => {
 
   registerClickCountIpcHandlers(clickCountService);
 
+  createMainWindow();
+
   setupApplicationMenu({
     appName: app.name,
     appVersion: app.getVersion(),
     onAboutRequested: async () => {
       await showAboutDialog(app.name, app.getVersion());
     },
-    onDatabaseFileSettingsRequested: async () => {
-      const selectedPath = await selectDatabaseFile(clickCountService.getDatabasePath());
-      if (selectedPath === null) {
-        return;
-      }
-
-      clickCountService.setDatabasePath(selectedPath);
-      await dialog.showMessageBox({
-        type: "info",
-        title: "Settings",
-        message: `SQLite database file updated to:\n${selectedPath}`
-      });
+    onSettingsRequested: async () => {
+      openSettingsWindow();
     }
   });
 
-  createMainWindow();
-
   app.on("activate", () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
+    if (mainWindow === null) {
       createMainWindow();
+      return;
     }
+
+    mainWindow.focus();
   });
 
   app.on("before-quit", () => {

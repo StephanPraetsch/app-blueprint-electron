@@ -22,6 +22,13 @@ const ensureNumber = (value: unknown): number => {
   return value;
 };
 
+const ensureString = (value: unknown, errorMessage: string): string => {
+  if (typeof value !== "string") {
+    throw new Error(errorMessage);
+  }
+  return value;
+};
+
 export const getCurrentClickCount = async (): Promise<number> => {
   const result = await getIpcRenderer().invoke(IPC_CHANNELS.getCurrentClickCount);
   return ensureNumber(result);
@@ -36,3 +43,25 @@ export const resetClickCount = async (): Promise<number> => {
   const result = await getIpcRenderer().invoke(IPC_CHANNELS.resetClickCount);
   return ensureNumber(result);
 };
+
+export const getDatabasePath = async (): Promise<string> => {
+  const result = await getIpcRenderer().invoke(IPC_CHANNELS.getDatabasePath);
+  return ensureString(result, "Invalid database path response.");
+};
+
+export const selectDatabasePath = async (): Promise<string | null> => {
+  const result = await getIpcRenderer().invoke(IPC_CHANNELS.selectDatabasePath);
+  if (result === null) {
+    return null;
+  }
+  return ensureString(result, "Invalid selected database path response.");
+};
+
+export const openDatabasePathInFileBrowser = async (): Promise<void> => {
+  await getIpcRenderer().invoke(IPC_CHANNELS.openDatabasePathInFileBrowser);
+};
+
+export const closeSettingsWindow = async (): Promise<void> => {
+  await getIpcRenderer().invoke(IPC_CHANNELS.closeSettingsWindow);
+};
+

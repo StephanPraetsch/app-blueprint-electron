@@ -4,23 +4,23 @@ type SetupApplicationMenuOptions = {
   appName: string;
   appVersion: string;
   onAboutRequested: () => Promise<void>;
-  onDatabaseFileSettingsRequested: () => Promise<void>;
+  onSettingsRequested: () => Promise<void>;
 };
 
 export const setupApplicationMenu = ({
   appName,
   appVersion,
   onAboutRequested,
-  onDatabaseFileSettingsRequested
+  onSettingsRequested
 }: SetupApplicationMenuOptions): void => {
   const template: Electron.MenuItemConstructorOptions[] = [
     {
-      label: "Settings",
+      label: "File",
       submenu: [
         {
-          label: "Database File...",
+          label: "Settings",
           click: async () => {
-            await onDatabaseFileSettingsRequested();
+            await onSettingsRequested();
           }
         }
       ]
