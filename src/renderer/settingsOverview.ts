@@ -57,7 +57,7 @@ export class SettingsOverview {
         }
 
         this.databasePathOutput.textContent = selectedPath;
-        this.statusOutput.textContent = "Database file path updated.";
+        this.statusOutput.textContent = "Database file path updated and app refreshed.";
       } catch (error) {
         this.statusOutput.textContent = `Failed to change database file path: ${this.toErrorMessage(error)}`;
       }
