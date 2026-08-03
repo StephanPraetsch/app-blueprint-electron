@@ -5,6 +5,7 @@ export const IPC_CHANNELS = {
   databasePathChanged: "settings:database-path:changed",
   getDatabasePath: "settings:database-path:get",
   selectDatabasePath: "settings:database-path:select",
+  createDatabasePath: "settings:database-path:create",
   openDatabasePathInFileBrowser: "settings:database-path:open-in-file-browser",
   closeSettingsWindow: "settings:window:close"
 } as const;

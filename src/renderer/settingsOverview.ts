@@ -1,5 +1,6 @@
 export type GetDatabasePath = () => Promise<string>;
 export type SelectDatabasePath = () => Promise<string | null>;
+export type CreateDatabasePath = () => Promise<string | null>;
 export type OpenDatabasePathInFileBrowser = () => Promise<void>;
 export type CloseSettingsWindow = () => Promise<void>;
 
@@ -7,10 +8,12 @@ export class SettingsOverview {
   private readonly databasePathOutput: HTMLElement;
   private readonly openInFileBrowserButton: HTMLButtonElement;
   private readonly changeDatabasePathButton: HTMLButtonElement;
+  private readonly createDatabasePathButton: HTMLButtonElement;
   private readonly closeButton: HTMLButtonElement;
   private readonly statusOutput: HTMLElement;
   private readonly getDatabasePath: GetDatabasePath;
   private readonly selectDatabasePath: SelectDatabasePath;
+  private readonly createDatabasePath: CreateDatabasePath;
   private readonly openDatabasePathInFileBrowser: OpenDatabasePathInFileBrowser;
   private readonly closeSettingsWindow: CloseSettingsWindow;
 
@@ -18,20 +21,24 @@ export class SettingsOverview {
     databasePathOutput: HTMLElement,
     openInFileBrowserButton: HTMLButtonElement,
     changeDatabasePathButton: HTMLButtonElement,
+    createDatabasePathButton: HTMLButtonElement,
     closeButton: HTMLButtonElement,
     statusOutput: HTMLElement,
     getDatabasePath: GetDatabasePath,
     selectDatabasePath: SelectDatabasePath,
+    createDatabasePath: CreateDatabasePath,
     openDatabasePathInFileBrowser: OpenDatabasePathInFileBrowser,
     closeSettingsWindow: CloseSettingsWindow
   ) {
     this.databasePathOutput = databasePathOutput;
     this.openInFileBrowserButton = openInFileBrowserButton;
     this.changeDatabasePathButton = changeDatabasePathButton;
+    this.createDatabasePathButton = createDatabasePathButton;
     this.closeButton = closeButton;
     this.statusOutput = statusOutput;
     this.getDatabasePath = getDatabasePath;
     this.selectDatabasePath = selectDatabasePath;
+    this.createDatabasePath = createDatabasePath;
     this.openDatabasePathInFileBrowser = openDatabasePathInFileBrowser;
     this.closeSettingsWindow = closeSettingsWindow;
   }
@@ -60,6 +67,21 @@ export class SettingsOverview {
         this.statusOutput.textContent = "Database file path updated and app refreshed.";
       } catch (error) {
         this.statusOutput.textContent = `Failed to change database file path: ${this.toErrorMessage(error)}`;
+      }
+    });
+
+    this.createDatabasePathButton.addEventListener("click", async () => {
+      try {
+        const selectedPath = await this.createDatabasePath();
+        if (selectedPath === null) {
+          this.statusOutput.textContent = "Database file path unchanged.";
+          return;
+        }
+
+        this.databasePathOutput.textContent = selectedPath;
+        this.statusOutput.textContent = "New database file path set and app refreshed.";
+      } catch (error) {
+        this.statusOutput.textContent = `Failed to create new database file path: ${this.toErrorMessage(error)}`;
       }
     });
 
