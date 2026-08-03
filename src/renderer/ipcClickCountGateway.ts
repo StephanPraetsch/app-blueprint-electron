@@ -57,6 +57,14 @@ export const selectDatabasePath = async (): Promise<string | null> => {
   return ensureString(result, "Invalid selected database path response.");
 };
 
+export const createDatabasePath = async (): Promise<string | null> => {
+  const result = await getIpcRenderer().invoke(IPC_CHANNELS.createDatabasePath);
+  if (result === null) {
+    return null;
+  }
+  return ensureString(result, "Invalid created database path response.");
+};
+
 export const openDatabasePathInFileBrowser = async (): Promise<void> => {
   await getIpcRenderer().invoke(IPC_CHANNELS.openDatabasePathInFileBrowser);
 };

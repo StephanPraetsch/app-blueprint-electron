@@ -1,7 +1,7 @@
 import {BrowserWindow, ipcMain, shell} from "electron";
 import type {ClickCountApplicationService} from "../../../application/services/ClickCountApplicationService.js";
 import {IPC_CHANNELS} from "../../../../shared/ipcChannels.js";
-import {selectDatabaseFile} from "../menu/selectDatabaseFileDialog.js";
+import {createDatabaseFile, selectDatabaseFile} from "../menu/selectDatabaseFileDialog.js";
 
 export const registerClickCountIpcHandlers = (service: ClickCountApplicationService): void => {
   ipcMain.handle(IPC_CHANNELS.getCurrentClickCount, () => {
@@ -22,6 +22,19 @@ export const registerClickCountIpcHandlers = (service: ClickCountApplicationServ
 
   ipcMain.handle(IPC_CHANNELS.selectDatabasePath, async () => {
     const selectedPath = await selectDatabaseFile(service.getDatabasePath());
+    if (selectedPath === null) {
+      return null;
+    }
+
+    service.setDatabasePath(selectedPath);
+    BrowserWindow.getAllWindows().forEach((window) => {
+      window.webContents.send(IPC_CHANNELS.databasePathChanged);
+    });
+    return service.getDatabasePath();
+  });
+
+  ipcMain.handle(IPC_CHANNELS.createDatabasePath, async () => {
+    const selectedPath = await createDatabaseFile(service.getDatabasePath());
     if (selectedPath === null) {
       return null;
     }
