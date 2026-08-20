@@ -10,7 +10,8 @@
     "rootDir": "src",
     "outDir": "dist",
     "types": ["node"],
-    "lib": ["ES2022", "DOM"]
+    "lib": ["ES2022", "DOM"],
+    "sourceMap": true
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts"]
 }

@@ -23,6 +23,17 @@ yarn install
 yarn dev
 ```
 
+## Start debugging with Intellij
+
+```bash
+nvm use
+corepack enable
+corepack prepare yarn@1.22.22 --activate
+yarn install
+yarn build
+node --inspect=9229 ./node_modules/.bin/electron . --remote-debugging-port=9222
+```
+
 ## Releasing a New Version
 
 ```bash
